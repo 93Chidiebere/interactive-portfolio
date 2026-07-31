@@ -6,7 +6,7 @@ const PortfolioContext = createContext();
 export const usePortfolio = () => useContext(PortfolioContext);
 
 // Dynamic background music URL (defaulting to a beautiful ambient track)
-const AMBIENT_MUSIC_URL = '/Adiemus.mp3';
+const AMBIENT_MUSIC_URL = import.meta.env.BASE_URL + 'Adiemus.mp3';
 
 export const PortfolioProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -171,7 +171,10 @@ export const PortfolioProvider = ({ children }) => {
     if (isMuted || !isPlaying) return;
 
     if (currentScene.audioPath) {
-      const audio = new Audio(currentScene.audioPath);
+      const finalAudioPath = currentScene.audioPath.startsWith('http') || currentScene.audioPath.startsWith('data:')
+        ? currentScene.audioPath
+        : import.meta.env.BASE_URL + currentScene.audioPath.replace(/^\//, '');
+      const audio = new Audio(finalAudioPath);
       sceneAudioRef.current = audio;
       audio.volume = 1.0;
       audio.playbackRate = playbackSpeed;
